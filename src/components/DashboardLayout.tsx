@@ -21,7 +21,7 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ companyName }) => {
-  const { employees, loading: employeesLoading, refetch: refreshEmployees } = useEmployees();
+  const { employees, refetch: refreshEmployees } = useEmployees();
   const { addNotification } = useNotifications();
   
   // Get activeTab from localStorage to maintain persistence
@@ -63,20 +63,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ companyName }) => {
   useEffect(() => {
     const checkWalletConnection = async () => {
       try {
-        console.log('Checking wallet connection...');
         const wallet = await reconnectWallet();
         if (wallet) {
-          console.log('Wallet reconnected successfully:', wallet.address);
           setIsWalletConnected(true);
           setWalletAddress(wallet.address);
-          
-          // Explicitly refresh employees after wallet connection
-          setTimeout(() => {
-            console.log('Refreshing employees after wallet connection');
-            refreshEmployees();
-          }, 500);
-        } else {
-          console.log('No wallet connection found');
         }
       } catch (error) {
         console.error('Failed to reconnect wallet:', error);
@@ -84,17 +74,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ companyName }) => {
     };
 
     checkWalletConnection();
-  }, [refreshEmployees]);
-  
-  // Debug log for wallet and employee state
-  useEffect(() => {
-    console.log('Wallet connection state:', { 
-      isWalletConnected, 
-      walletAddress,
-      employeesCount: employees.length,
-      employeesLoading
-    });
-  }, [isWalletConnected, walletAddress, employees, employeesLoading]);
+  }, []);
 
   // Reset notification flag when wallet disconnects
   useEffect(() => {

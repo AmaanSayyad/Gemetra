@@ -250,51 +250,28 @@ export const sendPayment = async (
         suggestedParams: suggestedParams,
       });
     } else {
-      // Using Algorand Testnet USDC asset ID
-      // Note: This should be updated to the correct asset ID for your environment
-      // Testnet asset IDs change periodically, so this needs to be kept current
       const assetId = token === 'USDC' ? 10458941 : 0;
-      
-      console.log(`Using asset ID ${assetId} for ${token}`);
       
       // Check if recipient is opted in to the asset
       try {
-        console.log(`Checking if recipient ${trimmedRecipient} is opted in to asset ID ${assetId}`);
         const recipientInfo = await algodClient.accountInformation(trimmedRecipient).do();
         
         // More robust opt-in check
         let isOptedIn = false;
         if (recipientInfo.assets && Array.isArray(recipientInfo.assets)) {
-          console.log(`Recipient has ${recipientInfo.assets.length} assets`);
-          
-          // Log all assets for debugging
-          recipientInfo.assets.forEach((asset: any) => {
-            const currentAssetId = asset['asset-id'] || asset.assetId || asset['assetId'];
-            console.log(`Recipient has asset ID: ${currentAssetId}`);
-          });
-          
           isOptedIn = recipientInfo.assets.some((asset: any) => {
             const currentAssetId = asset['asset-id'] || asset.assetId || asset['assetId'];
-            const matches = Number(currentAssetId) === Number(assetId);
-            if (matches) {
-              console.log(`Found matching asset ID ${currentAssetId}`);
-            }
-            return matches;
+            return Number(currentAssetId) === Number(assetId);
           });
         }
         
         if (!isOptedIn) {
-          console.error(`Recipient is not opted in to ${token} (Asset ID: ${assetId})`);
           throw new Error(`Recipient must opt-in to ${token} (Asset ID: ${assetId}) before receiving payments. Please ask them to opt-in first.`);
-        } else {
-          console.log(`Recipient is opted in to ${token} (Asset ID: ${assetId})`);
         }
       } catch (error) {
         if (error instanceof Error && error.message.includes('account does not exist')) {
-          console.error(`Recipient address does not exist or has no balance`);
           throw new Error(`Recipient address does not exist or has no balance. They need to fund their account first.`);
         }
-        console.error(`Error checking opt-in status:`, error);
         throw error;
       }
       
@@ -439,39 +416,7 @@ export const sendBulkPayment = async (
           suggestedParams: suggestedParams,
         });
       } else {
-        // Using Algorand Testnet USDC asset ID
-        // Note: This should be updated to the correct asset ID for your environment
-        // Testnet asset IDs change periodically, so this needs to be kept current
         const assetId = token === 'USDC' ? 10458941 : 0;
-        
-        console.log(`Using asset ID ${assetId} for ${token} in bulk payment`);
-        
-        // Check if recipient is opted in to the asset
-        try {
-          console.log(`Checking if recipient ${recipient.address} is opted in to asset ID ${assetId}`);
-          const recipientInfo = await algodClient.accountInformation(recipient.address).do();
-          
-          // More robust opt-in check
-          let isOptedIn = false;
-          if (recipientInfo.assets && Array.isArray(recipientInfo.assets)) {
-            console.log(`Recipient has ${recipientInfo.assets.length} assets`);
-            
-            isOptedIn = recipientInfo.assets.some((asset: any) => {
-              const currentAssetId = asset['asset-id'] || asset.assetId || asset['assetId'];
-              return Number(currentAssetId) === Number(assetId);
-            });
-          }
-          
-          if (!isOptedIn) {
-            console.error(`Recipient ${recipient.address} is not opted in to ${token} (Asset ID: ${assetId})`);
-            throw new Error(`Recipient must opt-in to ${token} (Asset ID: ${assetId}) before receiving payments. Please ask them to opt-in first.`);
-          } else {
-            console.log(`Recipient ${recipient.address} is opted in to ${token} (Asset ID: ${assetId})`);
-          }
-        } catch (error) {
-          console.error(`Error checking opt-in status for ${recipient.address}:`, error);
-          throw error;
-        }
         
         txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
           sender: senderAccount,
@@ -554,51 +499,6 @@ export const swapTokens = async (
     success: Math.random() > 0.02, // 98% success rate for swaps
     outputAmount
   };
-};
-
-// Helper function to find USDC asset on testnet
-export const findUSDCAssetId = async (): Promise<number | null> => {
-  try {
-    console.log('Attempting to find USDC asset ID on testnet...');
-    
-    // Common USDC asset IDs to try
-    const possibleUSDCAssetIds = [
-      10458941, // The current one in the code
-      10458942,
-      37074699, // Another possible testnet USDC ID
-      31566704, // Another possible testnet USDC ID
-      312769  // Another possible testnet USDC ID
-    ];
-    
-    // Check each asset ID
-    for (const assetId of possibleUSDCAssetIds) {
-      try {
-        console.log(`Checking asset ID ${assetId}...`);
-        const assetInfo = await algodClient.getAssetByID(assetId).do();
-        
-        // Check if this looks like USDC
-        if (
-          assetInfo && 
-          assetInfo.params && 
-          (
-            (assetInfo.params.name && assetInfo.params.name.toUpperCase().includes('USDC')) ||
-            (assetInfo.params.unitName && assetInfo.params.unitName.toUpperCase().includes('USDC'))
-          )
-        ) {
-          console.log(`Found USDC asset with ID ${assetId}:`, assetInfo.params);
-          return assetId;
-        }
-      } catch (error) {
-        console.log(`Asset ID ${assetId} not found or error:`, error);
-      }
-    }
-    
-    console.log('No USDC asset found on testnet');
-    return null;
-  } catch (error) {
-    console.error('Error finding USDC asset ID:', error);
-    return null;
-  }
 };
 
 // Get detailed asset information

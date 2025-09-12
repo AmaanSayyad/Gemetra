@@ -421,7 +421,7 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
                         onClick={viewOnExplorer}
                         className="text-sm text-gray-700 hover:text-gray-900 flex items-center space-x-1"
                       >
-                        <span>View on AlgoExplorer</span>
+                        <span>View on Pera Explorer</span>
                         <Send className="w-3 h-3" />
                       </button>
                     </>

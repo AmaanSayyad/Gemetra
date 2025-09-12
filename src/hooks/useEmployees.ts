@@ -258,11 +258,6 @@ export const useEmployees = () => {
   useEffect(() => {
     fetchEmployees();
   }, [walletAddress]);
-  
-  // Debug log to track employee data
-  useEffect(() => {
-    console.log('Current employees state:', employees.length, 'employees');
-  }, [employees]);
 
   return {
     employees,

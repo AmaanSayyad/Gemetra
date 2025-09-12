@@ -47,91 +47,36 @@ export const BulkTransfer: React.FC<BulkTransferProps> = ({
 
   // Convert real employees to bulk transfer format
   useEffect(() => {
-    console.log('BulkTransfer: Processing employees:', employees.length);
-    
-    // Ensure we're working with employees that have all required fields
-    const validEmployees = employees.filter(emp => 
-      emp && emp.id && emp.name && emp.wallet_address && emp.salary
-    );
-    
-    console.log('BulkTransfer: Valid employees:', validEmployees.length);
-    
-    // Filter for active employees (or include all if status is missing)
-    const activeEmployees = validEmployees.filter(emp => 
-      !emp.status || emp.status === 'active'
-    );
-    
-    console.log('BulkTransfer: Active employees:', activeEmployees.length);
-    
-    // Preserve selection state when updating the employee list
-    setBulkEmployees(prev => {
-      const convertedEmployees: BulkTransferEmployee[] = activeEmployees.map(emp => {
-        // Check if this employee already exists in previous bulkEmployees
-        const existingEmployee = prev.find(existing => existing.id === emp.id);
-        
-        return {
-          id: emp.id,
-          name: emp.name,
-          email: emp.email || '',
-          wallet_address: emp.wallet_address,
-          amount: emp.salary,
-          // Preserve selection state if employee already exists, otherwise check if it matches selectedEmployee
-          selected: existingEmployee ? existingEmployee.selected : 
-                    (selectedEmployee ? emp.id === selectedEmployee.id : false)
-        };
-      });
-      
-      console.log('BulkTransfer: Setting bulk employees:', convertedEmployees.length);
-      return convertedEmployees;
-    });
+    const activeEmployees = employees.filter(emp => emp.status === 'active');
+    const convertedEmployees: BulkTransferEmployee[] = activeEmployees.map(emp => ({
+      id: emp.id,
+      name: emp.name,
+      email: emp.email,
+      wallet_address: emp.wallet_address,
+      amount: emp.salary,
+      selected: selectedEmployee ? emp.id === selectedEmployee.id : false
+    }));
+    setBulkEmployees(convertedEmployees);
     
     // Don't automatically clear selectedEmployee - let the parent manage it
+    // This prevents the selection from being immediately cleared
   }, [employees, selectedEmployee]);
 
   const selectedEmployees = bulkEmployees.filter(emp => emp.selected);
   const totalAmount = selectedEmployees.reduce((sum, emp) => sum + emp.amount, 0);
 
   const handleSelectAll = () => {
-    console.log('Selecting all employees');
-    setBulkEmployees(currentEmployees => 
-      currentEmployees.map(emp => ({ ...emp, selected: true }))
-    );
+    setBulkEmployees(bulkEmployees.map(emp => ({ ...emp, selected: true })));
   };
 
   const handleUnselectAll = () => {
-    console.log('Unselecting all employees');
-    setBulkEmployees(currentEmployees => 
-      currentEmployees.map(emp => ({ ...emp, selected: false }))
-    );
+    setBulkEmployees(bulkEmployees.map(emp => ({ ...emp, selected: false })));
   };
 
   const handleToggleEmployee = (id: string) => {
-    console.log('Toggling employee selection:', id);
-    
-    // Use the functional update pattern to ensure we're working with the latest state
-    setBulkEmployees(currentEmployees => {
-      // Find the employee to toggle
-      const employeeToToggle = currentEmployees.find(emp => emp.id === id);
-      
-      if (employeeToToggle) {
-        console.log('Found employee to toggle:', employeeToToggle.name);
-        console.log('Current selected state:', employeeToToggle.selected);
-        
-        // Create a new array with the updated selection
-        const updatedEmployees = currentEmployees.map(emp => 
-          emp.id === id ? { ...emp, selected: !emp.selected } : emp
-        );
-        
-        // Log the selected employees after the update
-        const selected = updatedEmployees.filter(emp => emp.selected);
-        console.log('Selected employees after update:', selected.length);
-        
-        return updatedEmployees;
-      }
-      
-      console.log('Employee not found:', id);
-      return currentEmployees;
-    });
+    setBulkEmployees(bulkEmployees.map(emp => 
+      emp.id === id ? { ...emp, selected: !emp.selected } : emp
+    ));
   };
 
   const handleOpenPreview = () => {
