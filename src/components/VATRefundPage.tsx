@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Upload, FileCheck, QrCode, CheckCircle, AlertCircle, Search, Clock, FileText, FileUp, FormInput, ExternalLink } from 'lucide-react';
-import { peraWallet, getConnectedAccount, sendBulkPayment } from '../utils/algorand';
+import { peraWallet, getConnectedAccount, sendBulkPayment, findUSDCAssetId } from '../utils/algorand';
 import { usePayments } from '../hooks/usePayments';
 
 interface VATRefundPageProps {
@@ -18,6 +18,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
   const [refundAmount, setRefundAmount] = useState<number>(0);
   const [entryMode, setEntryMode] = useState<'upload' | 'manual'>('upload');
   const [selectedToken, setSelectedToken] = useState<'ALGO' | 'USDC'>('ALGO');
+  const [usdcAssetId, setUsdcAssetId] = useState<number | null>(null);
   const [transactionStatus, setTransactionStatus] = useState<'waiting' | 'confirmed' | 'rejected'>('waiting');
   const [transactionHash, setTransactionHash] = useState<string>('');
   const [refundHistory, setRefundHistory] = useState<any[]>([]);
@@ -40,8 +41,28 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
     receiverWalletAddress: ''
   });
   
+  // Find the correct USDC asset ID when component mounts
+  useEffect(() => {
+    const checkUSDCAssetId = async () => {
+      try {
+        console.log('Checking for USDC asset ID on testnet...');
+        const foundAssetId = await findUSDCAssetId();
+        if (foundAssetId) {
+          console.log(`Found USDC asset ID: ${foundAssetId}`);
+          setUsdcAssetId(foundAssetId);
+        } else {
+          console.warn('Could not find USDC asset ID. USDC transactions may fail.');
+        }
+      } catch (error) {
+        console.error('Error checking USDC asset ID:', error);
+      }
+    };
+    
+    checkUSDCAssetId();
+  }, []);
+  
   // Fetch VAT refund history
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchRefundHistory = async () => {
       setIsHistoryLoading(true);
       try {
@@ -146,6 +167,8 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       
       // If wallet is connected, process the payment
       if (connectedAccount) {
+        console.log(`Processing payment with token: ${selectedToken}, USDC asset ID: ${usdcAssetId || 'using default'}`);
+        
         // Process the payment using sendBulkPayment
         const result = await sendBulkPayment(recipientsData, selectedToken);
         
@@ -460,6 +483,11 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                       <span className="text-sm">USD Coin (USDC)</span>
                     </label>
                   </div>
+                  {selectedToken === 'USDC' && !usdcAssetId && (
+                    <div className="mt-2 text-xs text-amber-600">
+                      Warning: USDC asset ID not found. Transactions may fail. Consider using ALGO instead.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
