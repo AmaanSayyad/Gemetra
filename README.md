@@ -110,7 +110,6 @@ graph LR
     API-- Reports/Exports -->AUD
 ```
 
-
 ## 🛠️ Tech Stack  
 
 - **Blockchain**: [Algorand](https://developer.algorand.org/)  
@@ -207,3 +206,4 @@ graph LR
 **“The first on-chain VAT Refund & Payroll Payment Infrastructure — wallet-native, AI-powered, protecting users from delays, fees, and friction.”**  
 
 **Slides/ Pitch Deck:** https://docs.google.com/presentation/d/1bzsEj2jJwcSTQX8WhLcXpW4P-H73TeIkXKTiKYlO-KY/edit?usp=sharing  
+
