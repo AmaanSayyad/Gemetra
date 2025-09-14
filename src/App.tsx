@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
-import { Header } from "./components/Header";
-import { LandingPage } from "./components/LandingPage";
-import DashboardLayout from "./components/DashboardLayout";
+
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
+import DashboardLayout from "./components/DashboardLayout";
+import { LandingPage } from "./components/LandingPage";
+import { Header } from "./components/Header";
+
 
 function App() {
   const { address, isConnected } = useAccount();
@@ -60,6 +62,7 @@ function App() {
           </AnimatePresence>
         </main>
       </div>
+   
     </div>
   );
 }
