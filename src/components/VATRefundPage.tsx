@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Upload, FileCheck, QrCode, CheckCircle, AlertCircle, Search, Clock, FileText, FileUp, FormInput, ExternalLink } from 'lucide-react';
 import { peraWallet, getConnectedAccount, sendBulkPayment } from '../utils/algorand';
 import { usePayments } from '../hooks/usePayments';
+import { useAccount, useSendTransaction } from "wagmi";
+import { parseEther } from "viem";
+
 
 interface VATRefundPageProps {
   onBack?: () => void;
@@ -23,7 +26,10 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
   const [refundHistory, setRefundHistory] = useState<any[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  
+
+  const { address } = useAccount();
+  const { sendTransactionAsync } = useSendTransaction();
+
   // Form fields for manual entry
   const [formData, setFormData] = useState({
     vatRegNo: '',
@@ -39,14 +45,14 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
     merchantAddress: '',
     receiverWalletAddress: ''
   });
-  
+
   // Fetch VAT refund history
   React.useEffect(() => {
     const fetchRefundHistory = async () => {
       setIsHistoryLoading(true);
       try {
         const allPayments = await getAllPayments();
-        
+
         // Filter payments that are VAT refunds (employee_id === 'vat-refund')
         const vatRefunds = allPayments
           .filter(payment => payment.employee_id === 'vat-refund')
@@ -61,7 +67,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
             document: payment.employee_id === 'vat-refund' ? 'VAT Refund' : ''
           }))
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        
+
         setRefundHistory(vatRefunds);
       } catch (error) {
         console.error('Failed to fetch VAT refund history:', error);
@@ -69,7 +75,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
         setIsHistoryLoading(false);
       }
     };
-    
+
     fetchRefundHistory();
   }, [getAllPayments, refreshKey]);
 
@@ -86,15 +92,15 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       setErrorMessage('Please select a file to upload');
       return;
     }
-    
+
     if (!formData.receiverWalletAddress) {
       setErrorMessage('Please enter a receiver wallet address');
       return;
     }
-    
+
     // Validate wallet address format (basic validation)
-    if (formData.receiverWalletAddress.length !== 58) {
-      setErrorMessage('Please enter a valid Algorand wallet address (58 characters)');
+    if (formData.receiverWalletAddress.length !== 42) {
+      setErrorMessage('Please enter a valid Algorand wallet address (42 characters)');
       return;
     }
 
@@ -115,84 +121,76 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
   const handleApprove = async () => {
     setIsLoading(true);
     setErrorMessage(null);
-    
+
     try {
-      // Check if wallet is connected
-      const connectedAccount = getConnectedAccount();
-      
-      // Always show the sign step with a message about mobile wallet popup
-      setQrValue(`algorand://gemetra-vat-refund/${Date.now()}`);
-      
-      // Prepare recipient data for the payment
-      const recipientAddress = entryMode === 'manual' ? formData.receiverWalletAddress : formData.receiverWalletAddress;
-      
+      if (!address) {
+        throw new Error("Wallet not connected. Please connect your wallet.");
+      }
+
+      // Recipient wallet address
+      const recipientAddress =
+        entryMode === "manual"
+          ? formData.receiverWalletAddress
+          : formData.receiverWalletAddress;
+
       if (!recipientAddress) {
-        throw new Error('Recipient wallet address is required');
+        throw new Error("Recipient wallet address is required");
       }
-      
-      // Prepare payment data
-      const recipientsData = [{
-        address: recipientAddress,
-        amount: refundAmount
-      }];
-      
-      console.log('Processing VAT refund payment:', {
-        recipients: recipientsData,
-        token: selectedToken
+
+      // Amount in ETH (or chain’s native token)
+      const amount = refundAmount?.toString();
+      if (!amount) throw new Error("Refund amount is required");
+
+      console.log("Processing VAT refund payment:", {
+        recipient: recipientAddress,
+        amount,
+        token: "native",
       });
-      
-      // Show a message about the Pera mobile wallet transaction popup
-      setStep('sign');
-      
-      // If wallet is connected, process the payment
-      if (connectedAccount) {
-        // Process the payment using sendBulkPayment
-        const result = await sendBulkPayment(recipientsData, selectedToken);
-        
-        if (result.success) {
-          setTransactionHash(result.txHash);
-          
-          // Record the payment
-          try {
-            await createPayment({
-              employee_id: 'vat-refund', // Special ID for VAT refunds
-              amount: refundAmount,
-              token: selectedToken,
-              transaction_hash: result.txHash,
-              status: 'completed',
-              payment_date: new Date().toISOString()
-            });
-          } catch (dbError) {
-            console.error('Failed to record VAT refund payment in database:', dbError);
-            // Continue with success flow even if database recording fails
-          }
-          
-          // Set QR value to include transaction hash
-          setQrValue(`algorand://tx/${result.txHash}`);
-          setTransactionStatus('confirmed');
-        } else {
-          // Handle payment failure
-          setErrorMessage(result.error || 'Payment failed');
-          setTransactionStatus('rejected');
-        }
+
+      setStep("sign");
+
+      // Send transaction
+      const tx = await sendTransactionAsync({
+        to: recipientAddress as `0x${string}`,
+        value: parseEther(amount), // Convert string ETH -> wei
+      });
+
+      console.log("Transaction sent:", tx);
+
+      // Record payment in local DB/storage
+      try {
+        await createPayment({
+          employee_id: "vat-refund",
+          amount: refundAmount,
+          token: "native",
+          transaction_hash: tx, // wagmi returns tx hash string
+          status: "completed",
+          payment_date: new Date().toISOString(),
+        });
+      } catch (dbError) {
+        console.error("Failed to record VAT refund payment:", dbError);
       }
+
+      setTransactionHash(tx);
+      setQrValue(`evm://tx/${tx}`);
+      setTransactionStatus("confirmed");
     } catch (error) {
-      console.error('Error in handleApprove:', error);
-      let errorMessage = 'An unexpected error occurred';
-      
+      console.error("Error in handleApprove:", error);
+      let errorMessage = "An unexpected error occurred";
+
       if (error instanceof Error) {
-        if (error.message.includes('asset') && error.message.includes('missing from')) {
-          errorMessage = 'Recipient has not opted-in to receive the selected token. They must opt-in first.';
-        } else if (error.message.includes('Wallet not connected')) {
-          errorMessage = 'Wallet is not connected. Please connect your wallet and try again.';
+        if (error.message.includes("insufficient funds")) {
+          errorMessage = "Insufficient funds in wallet.";
+        } else if (error.message.includes("Wallet not connected")) {
+          errorMessage = "Wallet is not connected. Please connect your wallet.";
         } else {
           errorMessage = error.message;
         }
       }
-      
+
       setErrorMessage(errorMessage);
-      setTransactionStatus('rejected');
-      setStep('sign');
+      setTransactionStatus("rejected");
+      setStep("sign");
     } finally {
       setIsLoading(false);
     }
@@ -206,7 +204,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       }
       return;
     }
-    
+
     setIsLoading(true);
     try {
       // Connect wallet if not connected
@@ -220,23 +218,23 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
 
       // Prepare recipient data for the payment
       const recipientAddress = entryMode === 'manual' ? formData.receiverWalletAddress : 'XBYLS2E6YI6XXL5BWCAMOA4GTWHXWXWUB3OCJP72CH3V2VJRQBQ7K5REV4';
-      
+
       if (!recipientAddress) {
         throw new Error('Recipient wallet address is required');
       }
-      
+
       // Prepare payment data
       const recipientsData = [{
         address: recipientAddress,
         amount: refundAmount
       }];
-      
+
       // Process the payment using sendBulkPayment
       const result = await sendBulkPayment(recipientsData, selectedToken);
-      
+
       if (result.success) {
         setTransactionHash(result.txHash);
-        
+
         // Record the payment
         try {
           await createPayment({
@@ -250,7 +248,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
         } catch (dbError) {
           console.error('Failed to record VAT refund payment in database:', dbError);
         }
-        
+
         // Set transaction as confirmed
         setTransactionStatus('confirmed');
         setQrValue(`algorand://tx/${result.txHash}`);
@@ -262,7 +260,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
     } catch (error) {
       console.error('Error in handleSign:', error);
       let errorMessage = 'An unexpected error occurred';
-      
+
       if (error instanceof Error) {
         if (error.message.includes('asset') && error.message.includes('missing from')) {
           errorMessage = 'Recipient has not opted-in to receive the selected token. They must opt-in first.';
@@ -272,7 +270,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
           errorMessage = error.message;
         }
       }
-      
+
       setErrorMessage(errorMessage);
       setTransactionStatus('rejected');
     } finally {
@@ -305,11 +303,11 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       receiverWalletAddress: ''
     });
   };
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // If VAT amount is updated, update refund amount
     if (name === 'vatAmount' && value) {
       const vatAmount = parseFloat(value);
@@ -318,35 +316,35 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       }
     }
   };
-  
+
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!formData.vatRegNo || !formData.receiptNo || !formData.vatAmount || !formData.passportNo || !formData.receiverWalletAddress) {
       setErrorMessage('Please fill in all required fields');
       return;
     }
-    
+
     // Validate wallet address format (basic validation)
     if (formData.receiverWalletAddress.length !== 58) {
       setErrorMessage('Please enter a valid Algorand wallet address (58 characters)');
       return;
     }
-    
+
     setIsLoading(true);
     setErrorMessage(null);
-    
+
     try {
       // Simulate processing
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       // Parse VAT amount
       const vatAmount = parseFloat(formData.vatAmount);
       if (!isNaN(vatAmount)) {
         setRefundAmount(vatAmount);
       }
-      
+
       setStep('review');
     } catch (error) {
       setErrorMessage('Failed to process your request. Please try again.');
@@ -354,7 +352,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       setIsLoading(false);
     }
   };
-  
+
 
   const renderUploadTab = () => {
     switch (step) {
@@ -366,115 +364,112 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
               <div className="flex border border-gray-300 rounded-lg overflow-hidden">
                 <button
                   onClick={() => setEntryMode('upload')}
-                  className={`flex items-center px-4 py-2 text-sm ${
-                    entryMode === 'upload'
+                  className={`flex items-center px-4 py-2 text-sm ${entryMode === 'upload'
                       ? 'bg-gray-900 text-white'
                       : 'bg-white text-gray-700 hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   <FileUp className="w-4 h-4 mr-2" />
                   Upload Document
                 </button>
                 <button
                   onClick={() => setEntryMode('manual')}
-                  className={`flex items-center px-4 py-2 text-sm ${
-                    entryMode === 'manual'
+                  className={`flex items-center px-4 py-2 text-sm ${entryMode === 'manual'
                       ? 'bg-gray-900 text-white'
                       : 'bg-white text-gray-700 hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   <FormInput className="w-4 h-4 mr-2" />
                   Manual Entry
                 </button>
               </div>
             </div>
-            
+
             <p className="text-gray-600 mb-6">
-              {entryMode === 'upload' 
+              {entryMode === 'upload'
                 ? 'Upload your VAT receipt document to process your refund. We support PDF, JPG, and PNG formats.'
                 : 'Enter your VAT receipt details manually to process your refund.'}
             </p>
-            
+
             {entryMode === 'upload' ? (
               <>
-            <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center mb-6">
-              <Upload className="w-12 h-12 text-blue-500 mb-4" />
-              <p className="text-gray-700 mb-4 text-center">Drag and drop your document here or click to browse</p>
-              <label className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200">
-                Select File
-                <input
-                  type="file"
-                  className="hidden"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={handleFileChange}
-                />
-              </label>
-              {selectedFile && (
-                <div className="mt-4 flex items-center text-sm text-gray-600">
-                  <FileCheck className="w-5 h-5 mr-2 text-green-500" />
-                  {selectedFile.name}
+                <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center mb-6">
+                  <Upload className="w-12 h-12 text-blue-500 mb-4" />
+                  <p className="text-gray-700 mb-4 text-center">Drag and drop your document here or click to browse</p>
+                  <label className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200">
+                    Select File
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={handleFileChange}
+                    />
+                  </label>
+                  {selectedFile && (
+                    <div className="mt-4 flex items-center text-sm text-gray-600">
+                      <FileCheck className="w-5 h-5 mr-2 text-green-500" />
+                      {selectedFile.name}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Payment Details</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Receiver Wallet Address <span className="text-red-500">*</span></label>
-                  <input
-                    type="text"
-                    name="receiverWalletAddress"
-                    value={formData.receiverWalletAddress}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g. 0xdAF0182De86F904918Db8d07c7340A1EfcDF8244"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Token</label>
-                  <div className="flex space-x-4">
-                    <label className="flex items-center">
+
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
+                  <h3 className="font-semibold text-gray-900 mb-4">Payment Details</h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Receiver Wallet Address <span className="text-red-500">*</span></label>
                       <input
-                        type="radio"
-                        name="token"
-                        value="ALGO"
-                        checked={selectedToken === 'SOMI'}
-                        onChange={() => setSelectedToken('SOMI')}
-                        className="mr-2"
+                        type="text"
+                        name="receiverWalletAddress"
+                        value={formData.receiverWalletAddress}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="e.g. 0xdAF0182De86F904918Db8d07c7340A1EfcDF8244"
+                        required
                       />
-                      <span className="text-sm">Somnia (SOMI)</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="token"
-                        value="USDC"
-                        checked={selectedToken === 'USDC'}
-                        onChange={() => setSelectedToken('USDC')}
-                        className="mr-2"
-                      />
-                      <span className="text-sm">USD Coin (USDC)</span>
-                    </label>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Token</label>
+                      <div className="flex space-x-4">
+                        <label className="flex items-center">
+                          <input
+                            type="radio"
+                            name="token"
+                            value="ALGO"
+                            checked={selectedToken === 'SOMI'}
+                            onChange={() => setSelectedToken('SOMI')}
+                            className="mr-2"
+                          />
+                          <span className="text-sm">Somnia (SOMI)</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input
+                            type="radio"
+                            name="token"
+                            value="USDC"
+                            checked={selectedToken === 'USDC'}
+                            onChange={() => setSelectedToken('USDC')}
+                            className="mr-2"
+                          />
+                          <span className="text-sm">USD Coin (USDC)</span>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="flex justify-end">
-              <button
-                onClick={handleUpload}
-                disabled={!selectedFile || !formData.receiverWalletAddress || isLoading}
-                className={`bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 ${
-                  !selectedFile || !formData.receiverWalletAddress || isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                {isLoading ? 'Processing...' : 'Upload Document'}
-              </button>
-            </div>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleUpload}
+                    disabled={!selectedFile || !formData.receiverWalletAddress || isLoading}
+                    className={`bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 ${!selectedFile || !formData.receiverWalletAddress || isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                  >
+                    {isLoading ? 'Processing...' : 'Upload Document'}
+                  </button>
+                </div>
               </>
             ) : (
               <form onSubmit={handleManualSubmit} className="space-y-6">
@@ -483,7 +478,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                     {errorMessage}
                   </div>
                 )}
-                
+
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                   <h3 className="font-semibold text-gray-900 mb-4">Receipt Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -561,7 +556,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Token</label>
                     <div className="flex space-x-4">
@@ -589,7 +584,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                       </label>
                     </div>
                   </div>
-                  
+
                   {formData.vatAmount && (
                     <div className="mt-4 p-3 bg-gray-100 border border-gray-200 rounded-lg">
                       <div className="flex justify-between items-center">
@@ -602,7 +597,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                   <h3 className="font-semibold text-gray-900 mb-4">Personal Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -652,7 +647,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                   <h3 className="font-semibold text-gray-900 mb-4">Merchant Information</h3>
                   <div className="grid grid-cols-1 gap-4">
@@ -680,14 +675,13 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end">
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className={`bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 ${
-                      isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
+                    className={`bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
                   >
                     {isLoading ? 'Processing...' : 'Submit Details'}
                   </button>
@@ -701,7 +695,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
         return (
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Review VAT Refund Details</h2>
-            
+
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
               {entryMode === 'upload' ? (
                 <div className="flex items-start mb-4">
@@ -724,7 +718,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                   </div>
                 </div>
               )}
-              
+
               <div className="space-y-4">
                 {entryMode === 'manual' && (
                   <>
@@ -761,7 +755,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="border-b border-gray-200 pb-4 mb-4">
                       <h4 className="font-medium text-gray-900 mb-3">Personal Information</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -789,7 +783,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                         )}
                       </div>
                     </div>
-                    
+
                     {(formData.merchantName || formData.merchantAddress) && (
                       <div className="border-b border-gray-200 pb-4 mb-4">
                         <h4 className="font-medium text-gray-900 mb-3">Merchant Information</h4>
@@ -811,7 +805,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                     )}
                   </>
                 )}
-                
+
                 <div className="flex justify-between border-b border-gray-200 pb-2">
                   <span className="text-gray-600">Document Type:</span>
                   <span className="text-gray-900 font-medium">VAT Receipt</span>
@@ -841,9 +835,8 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
               <button
                 onClick={handleApprove}
                 disabled={isLoading}
-                className={`bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 ${
-                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className={`bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
               >
                 {isLoading ? 'Processing...' : 'Approve & Continue'}
               </button>
@@ -854,8 +847,8 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       case 'sign':
         return (
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Sign with Pera Wallet</h2>
-            
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Sign with EVM Wallet</h2>
+
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 flex flex-col items-center justify-center mb-6">
               {transactionStatus === 'waiting' ? (
                 <>
@@ -867,7 +860,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                   <p className="text-gray-500 text-center text-sm mb-6">
                     If you don't see it, scan this QR code with your Pera Wallet app
                   </p>
-                  
+
                   <div className="bg-white border-2 border-gray-300 rounded-lg p-6 w-[200px] h-[200px] flex items-center justify-center mb-4">
                     <div className="text-center">
                       <QrCode className="w-16 h-16 mx-auto mb-3 text-gray-700" />
@@ -875,7 +868,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                       <div className="text-xs text-gray-500 mt-1">ID: {qrValue.slice(-8)}</div>
                     </div>
                   </div>
-                  
+
                   <div className="w-full max-w-md bg-blue-50 border border-blue-100 rounded-lg p-4 mt-2">
                     <h4 className="font-medium text-blue-800 mb-2">Transaction Details</h4>
                     <div className="space-y-2">
@@ -908,7 +901,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                       <div className="bg-green-50 border border-green-100 rounded-lg p-3 mb-4">
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-green-700">Transaction Hash:</span>
-                          <a 
+                          <a
                             href={`https://testnet.explorer.perawallet.app/tx/${transactionHash || qrValue.slice(-16)}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -951,20 +944,18 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                 <button
                   onClick={handleSign}
                   disabled={isLoading}
-                  className={`bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 ${
-                    isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
+                  className={`bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                 >
                   {isLoading ? 'Processing...' : 'I\'ve Scanned the QR Code'}
                 </button>
               ) : (
                 <button
                   onClick={() => transactionStatus === 'confirmed' ? setStep('confirmation') : handleReset()}
-                  className={`${
-                    transactionStatus === 'confirmed' 
-                      ? 'bg-gray-900 hover:bg-gray-800 text-white' 
+                  className={`${transactionStatus === 'confirmed'
+                      ? 'bg-gray-900 hover:bg-gray-800 text-white'
                       : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                  } font-medium py-2 px-6 rounded-lg transition-all duration-200`}
+                    } font-medium py-2 px-6 rounded-lg transition-all duration-200`}
                 >
                   {transactionStatus === 'confirmed' ? 'Continue' : 'Try Again'}
                 </button>
@@ -985,7 +976,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                 Your VAT refund request has been successfully submitted and is being processed
               </p>
             </div>
-            
+
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
               <div className="space-y-4">
                 <div className="flex justify-between border-b border-gray-200 pb-2">
@@ -1031,7 +1022,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                 {transactionHash && (
                   <div className="flex justify-between items-center border-b border-gray-200 pb-2">
                     <span className="text-gray-600">Transaction Hash:</span>
-                    <a 
+                    <a
                       href={`https://testnet.explorer.perawallet.app/tx/${transactionHash}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -1158,7 +1149,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                     </td>
                     <td className="py-3 px-4 text-center">
                       {refund.transaction_hash ? (
-                        <a 
+                        <a
                           href={`https://testnet.explorer.perawallet.app/tx/${refund.transaction_hash}`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -1183,28 +1174,26 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
 
   return (
     <div className="container mx-auto px-4 py-6">
-     
+
 
       <div className="mb-6">
         <div className="border-b border-gray-200">
           <nav className="flex space-x-8">
             <button
               onClick={() => setActiveTab('upload')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'upload'
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'upload'
                   ? 'border-gray-900 text-gray-900'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                }`}
             >
               Submit New Refund
             </button>
             <button
               onClick={() => setActiveTab('history')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'history'
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'history'
                   ? 'border-gray-900 text-gray-900'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                }`}
             >
               Refund History
             </button>
