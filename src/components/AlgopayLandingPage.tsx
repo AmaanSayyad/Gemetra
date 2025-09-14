@@ -15,15 +15,13 @@ import {
 import { Bolt } from './Icons'
 
 
-interface AlgopayLandingPageProps {
-  onConnectWallet: () => void;
-}
 
-function AlgopayLandingPage({ onConnectWallet }: AlgopayLandingPageProps) {
+
+function AlgopayLandingPage() {
   return (
     <div className="flex h-full w-full flex-col items-start bg-default-background">
       {/* Navigation - Fixed position navbar */}
-      <EnhancedNavbar onConnectWallet={onConnectWallet} transparent={true} />
+      <EnhancedNavbar transparent={true} />
 
       {/* Hero Section - First visible section with padding for navbar */}
       <div id="home" className="flex w-full flex-col items-center justify-center gap-12 b px-6 py-32 pt-40 relative overflow-hidden">
@@ -42,7 +40,7 @@ function AlgopayLandingPage({ onConnectWallet }: AlgopayLandingPageProps) {
         {/* Content */}
         <div className="flex w-full flex-col items-center justify-center gap-8 z-10">
           <div className="inline-block px-4 py-2 bg-brand-50 rounded-full mb-2">
-            <span className="font-['Montserrat'] text-[14px] font-[700] text-brand-800">BUILT ON ALGORAND</span>
+            <span className="font-['Montserrat'] text-[14px] font-[700] text-brand-800">BUILT ON MEZO</span>
           </div>
           <span className="w-full max-w-[1024px] whitespace-pre-wrap font-['Montserrat'] text-[96px] font-[900] leading-[84px] text-brand-800 text-center -tracking-[0.04em] mobile:font-['Montserrat'] mobile:text-[52px] mobile:font-[900] mobile:leading-[68px] mobile:tracking-normal">
             {"Global Remittance"} <br/> <span className="bg-gradient-to-r from-brand-800 to-brand-600 bg-clip-text text-transparent">Infrastructure</span>
@@ -50,7 +48,7 @@ function AlgopayLandingPage({ onConnectWallet }: AlgopayLandingPageProps) {
           
           <span className="w-full max-w-[768px] whitespace-pre-wrap font-['Montserrat'] text-[22px] font-[600] leading-[32px] text-brand-800 text-center -tracking-[0.015em]">
             {
-              "Borderless payments infrastructure built on Algorand blockchain unifying VAT refunds and global payroll automation. Trustless, transparent, and instant remittance with AI-driven financial intelligence."
+              "Borderless payments infrastructure built on Mezo blockchain unifying VAT refunds and global payroll automation. Trustless, transparent, and instant remittance with AI-driven financial intelligence."
             }
           </span>
         </div>
@@ -119,7 +117,7 @@ function AlgopayLandingPage({ onConnectWallet }: AlgopayLandingPageProps) {
               <h3 className="font-['Montserrat'] text-[24px] font-[700]">Blockchain Layer</h3>
             </div>
             <p className="text-subtext-color font-['Montserrat'] text-[16px] leading-[24px]">
-              Built on Algorand's carbon-negative blockchain with ultra-low fees, near-instant finality, and atomic transfers for guaranteed all-or-nothing payouts.
+              Built on Mezo's carbon-negative blockchain with ultra-low fees, near-instant finality, and atomic transfers for guaranteed all-or-nothing payouts.
             </p>
             <div className="flex flex-wrap gap-2 mt-auto">
               <span className="px-3 py-1 bg-brand-50 rounded-full text-sm font-medium text-brand-800">4s Finality</span>
@@ -757,7 +755,7 @@ function AlgopayLandingPage({ onConnectWallet }: AlgopayLandingPageProps) {
             Dual Workflows with Gemetra
           </span>
           <p className="max-w-[768px] text-center text-subtext-color font-['Montserrat'] text-[18px] leading-[28px]">
-            Our platform handles both VAT refunds and global payroll with streamlined, automated processes built on Algorand's blockchain
+            Our platform handles both VAT refunds and global payroll with streamlined, automated processes built on Mezo's blockchain
           </p>
         </div>
         

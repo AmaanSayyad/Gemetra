@@ -1,18 +1,17 @@
 import React from 'react';
-import { Wallet, Bell, User, Menu, X, LogOut, Settings } from 'lucide-react';
+import { Bell, User, Menu, X, LogOut, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { formatAddress } from '../utils/algorand';
 import { useAuth } from '../hooks/useAuth';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { Button } from "@/ui/components/Button";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   isWalletConnected: boolean;
   walletAddress: string;
-  onConnectWallet: () => void;
-  onDisconnectWallet: () => void;
   onGetStarted: () => void;
   user?: SupabaseUser | null;
 }
@@ -22,8 +21,6 @@ export const Header: React.FC<HeaderProps> = ({
   setActiveTab, 
   isWalletConnected, 
   walletAddress,
-  onConnectWallet,
-  onDisconnectWallet,
   onGetStarted,
   user
 }) => {
@@ -180,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {isWalletConnected ? (
                     <div className="relative">
                       <button
-                        onClick={handleWalletAction}
+                    
                         className="flex items-center space-x-2 bg-gray-900 hover:bg-gray-800 px-3 py-2 rounded-lg transition-colors"
                       >
                         <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -197,7 +194,7 @@ export const Header: React.FC<HeaderProps> = ({
                           <div className="p-2">
                             <button
                               onClick={() => {
-                                onDisconnectWallet();
+                            
                                 setShowWalletMenu(false);
                               }}
                               className="w-full flex items-center space-x-2 px-3 py-2 text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -210,12 +207,7 @@ export const Header: React.FC<HeaderProps> = ({
                       )}
                     </div>
                   ) : (
-                    <button
-                      onClick={onConnectWallet}
-                      className="btn-primary text-sm"
-                    >
-                      Connect Wallet
-                    </button>
+                    <ConnectButton/>
                   )}
 
                   
@@ -346,19 +338,14 @@ export const Header: React.FC<HeaderProps> = ({
                           <div className="text-xs text-gray-600 font-mono break-all">{walletAddress}</div>
                         </div>
                         <button
-                          onClick={onDisconnectWallet}
+                      
                           className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
                         >
                           Disconnect Wallet
                         </button>
                       </div>
                     ) : (
-                      <button
-                        onClick={onConnectWallet}
-                        className="block w-full text-left px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-                      >
-                        Connect Wallet
-                      </button>
+                      <ConnectButton/>
                     )}
                     <button
                       onClick={handleSignOut}

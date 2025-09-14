@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import * as SubframeUtils from "../utils";
 import { Button } from "./Button";
 import { Menu, X, ChevronDown, Wallet } from "lucide-react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 interface NavItemProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
@@ -44,13 +45,12 @@ const NavItem = React.forwardRef<HTMLElement, NavItemProps>(
 
 interface EnhancedNavbarProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
-  onConnectWallet?: () => void;
   transparent?: boolean;
 }
 
 const EnhancedNavbar = React.forwardRef<HTMLElement, EnhancedNavbarProps>(
   function EnhancedNavbar(
-    { className, onConnectWallet, transparent = false, ...otherProps }: EnhancedNavbarProps,
+    { className,transparent = false, ...otherProps }: EnhancedNavbarProps,
     ref
   ) {
     const [scrolled, setScrolled] = useState(false);
@@ -153,19 +153,12 @@ const EnhancedNavbar = React.forwardRef<HTMLElement, EnhancedNavbarProps>(
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Button
-              size="medium"
-              onClick={onConnectWallet}
-              icon={<Wallet size={16} />}
-              className={scrolled ? "" : "shadow-md"}
-            >
-              Connect Wallet
-            </Button>
+            <ConnectButton/>
           </div>
 
           {/* Mobile Menu Button */}
           <MobileNavbar 
-            onConnectWallet={onConnectWallet} 
+            
             scrollToSection={scrollToSection}
             activeSection={activeSection}
           />
