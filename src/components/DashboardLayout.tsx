@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEmployees } from '../hooks/useEmployees';
 import { useNotifications } from '../hooks/useNotifications';
 import type { Employee } from '../lib/supabase';
+import { useAccount } from 'wagmi';
 
 interface DashboardLayoutProps {
   companyName: string;
@@ -23,7 +24,7 @@ interface DashboardLayoutProps {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ companyName }) => {
   const { employees, refetch: refreshEmployees } = useEmployees();
   const { addNotification } = useNotifications();
-  
+  const {address, isConnected} = useAccount();
   // Get activeTab from localStorage to maintain persistence
   const [activeTab, setActiveTab] = useState(() => {
     const savedTab = localStorage.getItem('algopay_active_tab');
@@ -63,25 +64,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ companyName }) => {
   useEffect(() => {
     const checkWalletConnection = async () => {
       try {
-        const wallet = await reconnectWallet();
-        if (wallet) {
+        if (address && isConnected) {
           setIsWalletConnected(true);
-          setWalletAddress(wallet.address);
+          setWalletAddress(address);
         }
       } catch (error) {
         console.error('Failed to reconnect wallet:', error);
       }
     };
-
     checkWalletConnection();
   }, []);
 
   // Reset notification flag when wallet disconnects
   useEffect(() => {
-    if (!isWalletConnected) {
+    if (!isConnected) {
       setHasWalletConnectedNotificationBeenShown(false);
     }
-  }, [isWalletConnected]);
+  }, [isConnected]);
 
   // Open employee history modal when selectedEmployee changes, but not when on payments tab
   useEffect(() => {
@@ -99,39 +98,39 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ companyName }) => {
     addNotification('Payment processed successfully! Transaction has been recorded on the blockchain.');
   };
 
-  const handleConnectWallet = async () => {
-    setIsConnecting(true);
-    try {
-      const wallet = await connectWallet();
-      setIsWalletConnected(true);
-      setWalletAddress(wallet.address);
+  // const handleConnectWallet = async () => {
+  //   setIsConnecting(true);
+  //   try {
+  //     const wallet = await connectWallet();
+  //     setIsWalletConnected(true);
+  //     setWalletAddress(wallet.address);
       
-      // Create a notification when wallet is connected
-      addNotification('Wallet connected successfully. You can now send payments.');
-      setHasWalletConnectedNotificationBeenShown(true);
-    } catch (error) {
-      console.error('Failed to connect wallet:', error);
+  //     // Create a notification when wallet is connected
+  //     addNotification('Wallet connected successfully. You can now send payments.');
+  //     setHasWalletConnectedNotificationBeenShown(true);
+  //   } catch (error) {
+  //     console.error('Failed to connect wallet:', error);
       
-      // Create a notification for failed wallet connection
-      addNotification('Failed to connect wallet. Please try again.');
-    } finally {
-      setIsConnecting(false);
-    }
-  };
+  //     // Create a notification for failed wallet connection
+  //     addNotification('Failed to connect wallet. Please try again.');
+  //   } finally {
+  //     setIsConnecting(false);
+  //   }
+  // };
 
-  const handleDisconnectWallet = async () => {
-    try {
-      await disconnectWallet();
-      setIsWalletConnected(false);
-      setWalletAddress('');
+  // const handleDisconnectWallet = async () => {
+  //   try {
+  //     await disconnectWallet();
+  //     setIsWalletConnected(false);
+  //     setWalletAddress('');
       
-      // Create a notification when wallet is disconnected
-      addNotification('Wallet disconnected. Connect again to send payments.');
-      setHasWalletConnectedNotificationBeenShown(false);
-    } catch (error) {
-      console.error('Failed to disconnect wallet:', error);
-    }
-  };
+  //     // Create a notification when wallet is disconnected
+  //     addNotification('Wallet disconnected. Connect again to send payments.');
+  //     setHasWalletConnectedNotificationBeenShown(false);
+  //   } catch (error) {
+  //     console.error('Failed to disconnect wallet:', error);
+  //   }
+  // };
 
   const handleCloseEmployeeHistory = () => {
     setShowEmployeeHistoryModal(false);
@@ -234,8 +233,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ companyName }) => {
         }}
         isWalletConnected={isWalletConnected}
         walletAddress={walletAddress}
-        onConnectWallet={handleConnectWallet}
-        onDisconnectWallet={handleDisconnectWallet}
         user={null} /* Using wallet authentication instead of user */
         companyName={companyName}
         onToggleCollapse={handleToggleCollapse}

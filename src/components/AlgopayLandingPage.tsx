@@ -3,20 +3,17 @@ import { IconWithBackground } from "../ui/components/IconWithBackground";
 import EnhancedNavbar from "../ui/components/EnhancedNavbar";
 import EnhancedFooter from "../ui/components/EnhancedFooter";
 import Squares from "./Squares";
-import { 
-  Clock, 
-  DollarSign, 
-  Globe, 
-  Shield, 
-  Bot, 
+import {
+  Clock,
+  DollarSign,
+  Globe,
+  Shield,
+  Bot,
   Wallet,
   ArrowRight
 } from 'lucide-react';
 import { Bolt } from './Icons'
-
-
-
-
+import ConnectButton from "../utils/connect-wallet";
 function AlgopayLandingPage() {
   return (
     <div className="flex h-full w-full flex-col items-start bg-default-background">
@@ -26,26 +23,26 @@ function AlgopayLandingPage() {
       {/* Hero Section - First visible section with padding for navbar */}
       <div id="home" className="flex w-full flex-col items-center justify-center gap-12 b px-6 py-32 pt-40 relative overflow-hidden">
         {/* Squares Background */}
-        <Squares 
-          speed={0.5} 
+        <Squares
+          speed={0.5}
           squareSize={40}
           direction='diagonal'
-          borderColor = "#f1f1f1"
-          hoverFillColor = "#F1F1F1"
+          borderColor="#f1f1f1"
+          hoverFillColor="#F1F1F1"
         />
-        
+
         {/* Animated Gradient Overlay */}
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent via-brand-50/10 to-transparent animate-pulse-slow z-0"></div>
-        
+
         {/* Content */}
         <div className="flex w-full flex-col items-center justify-center gap-8 z-10">
           <div className="inline-block px-4 py-2 bg-brand-50 rounded-full mb-2">
             <span className="font-['Montserrat'] text-[14px] font-[700] text-brand-800">BUILT ON MEZO</span>
           </div>
           <span className="w-full max-w-[1024px] whitespace-pre-wrap font-['Montserrat'] text-[96px] font-[900] leading-[84px] text-brand-800 text-center -tracking-[0.04em] mobile:font-['Montserrat'] mobile:text-[52px] mobile:font-[900] mobile:leading-[68px] mobile:tracking-normal">
-            {"Global Remittance"} <br/> <span className="bg-gradient-to-r from-brand-800 to-brand-600 bg-clip-text text-transparent">Infrastructure</span>
+            {"Global Remittance"} <br /> <span className="bg-gradient-to-r from-brand-800 to-brand-600 bg-clip-text text-transparent">Infrastructure</span>
           </span>
-          
+
           <span className="w-full max-w-[768px] whitespace-pre-wrap font-['Montserrat'] text-[22px] font-[600] leading-[32px] text-brand-800 text-center -tracking-[0.015em]">
             {
               "Borderless payments infrastructure built on Mezo blockchain unifying VAT refunds and global payroll automation. Trustless, transparent, and instant remittance with AI-driven financial intelligence."
@@ -53,25 +50,18 @@ function AlgopayLandingPage() {
           </span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-6 z-10">
-          <Button
-            size="large"
-            onClick={onConnectWallet}
-            icon={<Wallet size={20} />}
-            className="px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            Connect Wallet
-          </Button>
+          <ConnectButton />
           <Button
             size="large"
             variant="neutral-secondary"
-            onClick={() => document.getElementById('features-section')?.scrollIntoView({behavior: 'smooth'})}
+            onClick={() => document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' })}
             icon={<ArrowRight size={20} />}
             className="px-8 py-6 hover:bg-brand-50 transition-all duration-300"
           >
             Learn More
           </Button>
         </div>
-        
+
         {/* Stats Bar */}
         <div className="flex flex-wrap justify-center gap-12 mt-12 z-10 w-full max-w-[1024px]">
           <div className="flex flex-col items-center">
@@ -102,7 +92,7 @@ function AlgopayLandingPage() {
             Our infrastructure combines blockchain reliability with AI intelligence to deliver a seamless financial experience
           </p>
         </div>
-        
+
         <div className="w-full max-w-[1280px] grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Blockchain Layer */}
           <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col gap-6">
@@ -137,7 +127,7 @@ function AlgopayLandingPage() {
               />
             </div>
           </div>
-          
+
           {/* AI Intelligence Layer */}
           <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col gap-6">
             <div className="flex items-center gap-4 mb-2">
@@ -165,7 +155,7 @@ function AlgopayLandingPage() {
               </div>
             </div>
           </div>
-          
+
           {/* Data & Storage Layer */}
           <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col gap-6">
             <div className="flex items-center gap-4 mb-2">
@@ -210,7 +200,7 @@ function AlgopayLandingPage() {
             A single borderless payments infrastructure that solves both VAT refund inefficiencies and global payroll complexity
           </p>
         </div>
-        
+
         <div className="w-full max-w-[1280px] flex flex-col gap-12">
           {/* Main Feature Card */}
           <div className="flex flex-col md:flex-row min-h-[500px] w-full rounded-[32px] bg-neutral-100 overflow-hidden shadow-xl">
@@ -233,7 +223,7 @@ function AlgopayLandingPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex-1 flex flex-col items-start justify-center gap-8 p-12">
               <div className="flex flex-col items-start justify-center gap-6">
                 <span className="font-['Montserrat'] text-[30px] font-[700] leading-[34px] text-default-font -tracking-[0.025em]">
@@ -244,28 +234,28 @@ function AlgopayLandingPage() {
                     "Gemetra unifies VAT refunds for tourists and global payroll automation on a single trustless platform. Powered by Algorand's blockchain for instant finality and AI-driven compliance."
                   }
                 </span>
-                
+
                 <div className="grid grid-cols-2 gap-4 w-full mt-4">
                   <div className="flex flex-col gap-2 p-4 rounded-xl bg-white shadow-sm">
                     <div className="flex items-center gap-2">
                       <IconWithBackground size="small" variant="brand" icon={<Globe />} />
                       <span className="font-['Montserrat'] text-[14px] font-[600] leading-[20px] text-default-font">
-                       VAT REFUNDS
+                        VAT REFUNDS
                       </span>
                     </div>
                     <p className="text-sm text-subtext-color">Instant tax refunds for tourists with near-zero fees</p>
                   </div>
-                  
+
                   <div className="flex flex-col gap-2 p-4 rounded-xl bg-white shadow-sm">
                     <div className="flex items-center gap-2">
                       <IconWithBackground size="small" variant="brand" icon={<Wallet />} />
                       <span className="font-['Montserrat'] text-[14px] font-[600] leading-[20px] text-default-font">
-                       GLOBAL PAYROLL
+                        GLOBAL PAYROLL
                       </span>
                     </div>
                     <p className="text-sm text-subtext-color">Automated salary disbursements across jurisdictions</p>
                   </div>
-                  
+
                   <div className="flex flex-col gap-2 p-4 rounded-xl bg-white shadow-sm">
                     <div className="flex items-center gap-2">
                       <IconWithBackground size="small" variant="brand" icon={<Clock />} />
@@ -275,7 +265,7 @@ function AlgopayLandingPage() {
                     </div>
                     <p className="text-sm text-subtext-color">No waiting for payments to clear or settle</p>
                   </div>
-                  
+
                   <div className="flex flex-col gap-2 p-4 rounded-xl bg-white shadow-sm">
                     <div className="flex items-center gap-2">
                       <IconWithBackground size="small" variant="brand" icon={<Bot />} />
@@ -287,18 +277,11 @@ function AlgopayLandingPage() {
                   </div>
                 </div>
               </div>
-              
-              <Button
-                size="large"
-                onClick={onConnectWallet}
-                icon={<Wallet size={20} />}
-                className="shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                Connect Wallet
-              </Button>
+
+              <ConnectButton />
             </div>
           </div>
-          
+
           {/* Feature Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-brand-50 rounded-2xl p-8 flex flex-col items-center text-center">
@@ -308,7 +291,7 @@ function AlgopayLandingPage() {
               <h3 className="font-['Montserrat'] text-[24px] font-[700] text-brand-900">Instant Transactions</h3>
               <p className="text-subtext-color mt-2">94% of transactions complete in under 4 seconds with Algorand's finality</p>
             </div>
-            
+
             <div className="bg-brand-50 rounded-2xl p-8 flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 shadow-md">
                 <Shield size={32} className="text-brand-800" />
@@ -316,7 +299,7 @@ function AlgopayLandingPage() {
               <h3 className="font-['Montserrat'] text-[24px] font-[700] text-brand-900">Military-Grade Security</h3>
               <p className="text-subtext-color mt-2">Multi-sig treasury and oracle signature verification for maximum protection</p>
             </div>
-            
+
             <div className="bg-brand-50 rounded-2xl p-8 flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 shadow-md">
                 <DollarSign size={32} className="text-brand-800" />
@@ -334,7 +317,7 @@ function AlgopayLandingPage() {
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
         </div>
-        
+
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-6 z-10">
           <span className="inline-block px-4 py-1 bg-brand-50 rounded-full">
             <span className="font-['Montserrat'] text-[12px] font-[700] text-brand-800">WHY GEMETRA</span>
@@ -346,7 +329,7 @@ function AlgopayLandingPage() {
             Our blockchain-based infrastructure combines speed, security, and intelligence to revolutionize global financial workflows
           </p>
         </div>
-        
+
         <div className="w-full max-w-[1280px] flex flex-col gap-12 z-10">
           {/* Main Benefits Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -360,7 +343,7 @@ function AlgopayLandingPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="p-8">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="px-3 py-1 bg-brand-50 rounded-full text-sm font-medium text-brand-800">4 SECONDS</span>
@@ -394,7 +377,7 @@ function AlgopayLandingPage() {
                 </ul>
               </div>
             </div>
-            
+
             {/* Ultra-Low Fees */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
               <div className="h-48 bg-brand-800 relative overflow-hidden">
@@ -405,7 +388,7 @@ function AlgopayLandingPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="p-8">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="px-3 py-1 bg-brand-50 rounded-full text-sm font-medium text-brand-800">0.001 ALGO</span>
@@ -439,7 +422,7 @@ function AlgopayLandingPage() {
                 </ul>
               </div>
             </div>
-            
+
             {/* AI Intelligence */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
               <div className="h-48 bg-brand-800 relative overflow-hidden">
@@ -450,7 +433,7 @@ function AlgopayLandingPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="p-8">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="px-3 py-1 bg-brand-50 rounded-full text-sm font-medium text-brand-800">AI POWERED</span>
@@ -485,7 +468,7 @@ function AlgopayLandingPage() {
               </div>
             </div>
           </div>
-          
+
           {/* Additional Benefits */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
             <div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-6">
@@ -497,7 +480,7 @@ function AlgopayLandingPage() {
                 <p className="text-subtext-color">Multi-sig treasury and oracle signature verification protect all transactions with enterprise-level security</p>
               </div>
             </div>
-            
+
             <div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-6">
               <div className="w-16 h-16 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0">
                 <Globe size={32} className="text-brand-800" />
@@ -524,38 +507,38 @@ function AlgopayLandingPage() {
             Gemetra combines VAT refunds for tourists and global payroll automation into a single borderless payments infrastructure with Web3 speed and AI-driven intelligence
           </p>
         </div>
-        
+
         <div className="w-full max-w-[1280px]">
           {/* VAT Refunds Use Case */}
           <div className="flex flex-col md:flex-row bg-white rounded-3xl overflow-hidden shadow-xl mb-12">
             <div className="md:w-1/2 bg-brand-900 p-12 relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-700 rounded-bl-full opacity-50"></div>
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-800 rounded-tr-full opacity-30"></div>
-              
+
               <div className="relative z-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full mb-6">
                   <ArrowRight size={16} className="text-white" />
                   <span className="font-['Montserrat'] text-[12px] font-[700] text-white">USE CASE 1</span>
                 </div>
-                
+
                 <h2 className="font-['Montserrat'] text-[40px] font-[800] text-white mb-6">VAT Refunds</h2>
-                
+
                 <p className="text-white/90 font-['Montserrat'] text-[18px] leading-[28px] mb-8">
                   Streamline VAT refunds for tourists leaving Dubai and other jurisdictions, solving delays, missed claims, and inefficiencies in reclaiming tax with near-instant blockchain payouts.
                 </p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
                     <h3 className="font-['Montserrat'] text-[18px] font-[700] text-white mb-2">Tourist Experience</h3>
                     <p className="text-white/80 text-sm">Tourists scan their VAT tag at airport kiosks and receive refunds directly to their wallet within seconds</p>
                   </div>
-                  
+
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
                     <h3 className="font-['Montserrat'] text-[18px] font-[700] text-white mb-2">Retailer Benefits</h3>
                     <p className="text-white/80 text-sm">Retailers issue digital tags with minimal overhead and attract more tax-conscious international shoppers</p>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
@@ -563,14 +546,14 @@ function AlgopayLandingPage() {
                     </div>
                     <span className="text-white/90">85-87% refund rate (vs. 60-70% traditional)</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
                       <span className="text-white text-xs">✓</span>
                     </div>
                     <span className="text-white/90">No queues or paperwork at the airport</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
                       <span className="text-white text-xs">✓</span>
@@ -580,7 +563,7 @@ function AlgopayLandingPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="md:w-1/2 p-8 md:p-12 flex flex-col">
               <div className="mb-8">
                 <h3 className="font-['Montserrat'] text-[24px] font-[700] text-brand-900 mb-4">How It Works</h3>
@@ -594,7 +577,7 @@ function AlgopayLandingPage() {
                       <p className="text-subtext-color">Retailer issues invoice + tax-free tag. Tourist wallet signs an ApplicationCall to Gemetra's VAT Contract.</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 mt-1">
                       <span className="font-['Montserrat'] font-bold text-brand-800">2</span>
@@ -604,7 +587,7 @@ function AlgopayLandingPage() {
                       <p className="text-subtext-color">Tourist scans tag at kiosk. Operator system validates goods exported and pushes a signed webhook to Gemetra Oracle.</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 mt-1">
                       <span className="font-['Montserrat'] font-bold text-brand-800">3</span>
@@ -616,7 +599,7 @@ function AlgopayLandingPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-auto">
                 <div className="bg-neutral-50 rounded-xl p-6 border border-neutral-100">
                   <h4 className="font-['Montserrat'] text-[16px] font-[700] text-default-font mb-2">Real-World Example</h4>
@@ -631,37 +614,37 @@ function AlgopayLandingPage() {
               </div>
             </div>
           </div>
-          
+
           {/* Global Payroll Use Case */}
           <div className="flex flex-col md:flex-row-reverse bg-white rounded-3xl overflow-hidden shadow-xl">
             <div className="md:w-1/2 bg-brand-800 p-12 relative">
               <div className="absolute top-0 left-0 w-32 h-32 bg-brand-700 rounded-br-full opacity-50"></div>
               <div className="absolute bottom-0 right-0 w-48 h-48 bg-brand-600 rounded-tl-full opacity-30"></div>
-              
+
               <div className="relative z-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full mb-6">
                   <Wallet size={16} className="text-white" />
                   <span className="font-['Montserrat'] text-[12px] font-[700] text-white">USE CASE 2</span>
                 </div>
-                
+
                 <h2 className="font-['Montserrat'] text-[40px] font-[800] text-white mb-6">Global Payroll</h2>
-                
+
                 <p className="text-white/90 font-['Montserrat'] text-[18px] leading-[28px] mb-8">
                   Automate payroll for distributed teams across jurisdictions, reducing transaction fees, ensuring compliance, and enabling instant on-chain salary payouts.
                 </p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
                     <h3 className="font-['Montserrat'] text-[18px] font-[700] text-white mb-2">For Companies</h3>
                     <p className="text-white/80 text-sm">Reduce payroll processing costs by 95% while ensuring regulatory compliance across multiple jurisdictions</p>
                   </div>
-                  
+
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
                     <h3 className="font-['Montserrat'] text-[18px] font-[700] text-white mb-2">For Employees</h3>
                     <p className="text-white/80 text-sm">Receive salary payments instantly without intermediary delays or excessive transfer fees</p>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
@@ -669,14 +652,14 @@ function AlgopayLandingPage() {
                     </div>
                     <span className="text-white/90">Support for 190+ countries</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
                       <span className="text-white text-xs">✓</span>
                     </div>
                     <span className="text-white/90">Automated tax compliance</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
                       <span className="text-white text-xs">✓</span>
@@ -686,7 +669,7 @@ function AlgopayLandingPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="md:w-1/2 p-8 md:p-12 flex flex-col">
               <div className="mb-8">
                 <h3 className="font-['Montserrat'] text-[24px] font-[700] text-brand-900 mb-4">How It Works</h3>
@@ -700,7 +683,7 @@ function AlgopayLandingPage() {
                       <p className="text-subtext-color">HR uploads CSV/contracts. AI parses gross salary, deductions, tax rules by jurisdiction and produces structured transaction plan.</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 mt-1">
                       <span className="font-['Montserrat'] font-bold text-brand-800">2</span>
@@ -710,7 +693,7 @@ function AlgopayLandingPage() {
                       <p className="text-subtext-color">CFO/HR dual-approves the payrun. Planner chunks recipients into atomic groups and treasury key signs for broadcast.</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center flex-shrink-0 mt-1">
                       <span className="font-['Montserrat'] font-bold text-brand-800">3</span>
@@ -722,7 +705,7 @@ function AlgopayLandingPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-auto">
                 <div className="bg-neutral-50 rounded-xl p-6 border border-neutral-100">
                   <h4 className="font-['Montserrat'] text-[16px] font-[700] text-default-font mb-2">Real-World Example</h4>
@@ -746,7 +729,7 @@ function AlgopayLandingPage() {
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
         </div>
-        
+
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-6 z-10">
           <span className="inline-block px-4 py-1 bg-brand-50 rounded-full">
             <span className="font-['Montserrat'] text-[12px] font-[700] text-brand-800">HOW IT WORKS</span>
@@ -758,7 +741,7 @@ function AlgopayLandingPage() {
             Our platform handles both VAT refunds and global payroll with streamlined, automated processes built on Mezo's blockchain
           </p>
         </div>
-        
+
         {/* VAT Refund Flow */}
         <div className="w-full max-w-[1280px] z-10">
           <div className="flex flex-col gap-12">
@@ -773,11 +756,11 @@ function AlgopayLandingPage() {
                     <h2 className="font-['Montserrat'] text-[32px] font-[800] text-brand-900">VAT Refund Process</h2>
                   </div>
                 </div>
-                
+
                 <div className="relative">
                   {/* Timeline Line */}
                   <div className="absolute left-4 top-6 bottom-6 w-1 bg-brand-100"></div>
-                  
+
                   <div className="space-y-12 relative">
                     {/* Step 1 */}
                     <div className="flex gap-8">
@@ -786,7 +769,7 @@ function AlgopayLandingPage() {
                           <span className="text-white font-bold">1</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex-1 bg-neutral-50 rounded-xl p-6 border border-neutral-100 shadow-sm">
                         <h3 className="font-['Montserrat'] text-[24px] font-[700] text-brand-900 mb-4">Purchase & Tagging</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -812,7 +795,7 @@ function AlgopayLandingPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Step 2 */}
                     <div className="flex gap-8">
                       <div className="relative">
@@ -820,7 +803,7 @@ function AlgopayLandingPage() {
                           <span className="text-white font-bold">2</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex-1 bg-neutral-50 rounded-xl p-6 border border-neutral-100 shadow-sm">
                         <h3 className="font-['Montserrat'] text-[24px] font-[700] text-brand-900 mb-4">Airport Validation</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -846,7 +829,7 @@ function AlgopayLandingPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Step 3 */}
                     <div className="flex gap-8">
                       <div className="relative">
@@ -854,7 +837,7 @@ function AlgopayLandingPage() {
                           <span className="text-white font-bold">3</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex-1 bg-neutral-50 rounded-xl p-6 border border-neutral-100 shadow-sm">
                         <h3 className="font-['Montserrat'] text-[24px] font-[700] text-brand-900 mb-4">On-chain Payout</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -886,7 +869,7 @@ function AlgopayLandingPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Payroll Flow */}
         <div className="w-full max-w-[1280px] z-10">
           <div className="flex flex-col gap-12">
@@ -901,11 +884,11 @@ function AlgopayLandingPage() {
                     <h2 className="font-['Montserrat'] text-[32px] font-[800] text-brand-900">Global Payroll Process</h2>
                   </div>
                 </div>
-                
+
                 <div className="relative">
                   {/* Timeline Line */}
                   <div className="absolute left-4 top-6 bottom-6 w-1 bg-brand-100"></div>
-                  
+
                   <div className="space-y-12 relative">
                     {/* Step 1 */}
                     <div className="flex gap-8">
@@ -914,7 +897,7 @@ function AlgopayLandingPage() {
                           <span className="text-white font-bold">1</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex-1 bg-neutral-50 rounded-xl p-6 border border-neutral-100 shadow-sm">
                         <h3 className="font-['Montserrat'] text-[24px] font-[700] text-brand-900 mb-4">Payroll Preparation</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -940,7 +923,7 @@ function AlgopayLandingPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Step 2 */}
                     <div className="flex gap-8">
                       <div className="relative">
@@ -948,7 +931,7 @@ function AlgopayLandingPage() {
                           <span className="text-white font-bold">2</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex-1 bg-neutral-50 rounded-xl p-6 border border-neutral-100 shadow-sm">
                         <h3 className="font-['Montserrat'] text-[24px] font-[700] text-brand-900 mb-4">Approval & Execution</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -974,7 +957,7 @@ function AlgopayLandingPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Step 3 */}
                     <div className="flex gap-8">
                       <div className="relative">
@@ -982,7 +965,7 @@ function AlgopayLandingPage() {
                           <span className="text-white font-bold">3</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex-1 bg-neutral-50 rounded-xl p-6 border border-neutral-100 shadow-sm">
                         <h3 className="font-['Montserrat'] text-[24px] font-[700] text-brand-900 mb-4">Compliance & Reporting</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -1029,15 +1012,9 @@ function AlgopayLandingPage() {
           </span>
         </div>
         <div className="flex flex-col items-center justify-center gap-6">
-        
+
           <span className="max-w-[768px] whitespace-pre-wrap font-['Montserrat'] text-[20px] font-[600] leading-[28px] text-brand-900 underline text-center -tracking-[0.015em]">
-                    <Button
-                      onClick={onConnectWallet}
-                      className="btn-primary text-sm px-6 py-2"
-                      icon={<Wallet size={16} />}
-                    >
-                      Connect Wallet
-                    </Button>
+            <ConnectButton />
           </span>
         </div>
       </div>
@@ -1077,54 +1054,47 @@ function AlgopayLandingPage() {
             </div>
             <div className="flex w-full flex-col items-start gap-4">
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-default-font">
                   Up to 5 employees
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-default-font">
                   Basic payroll processing
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-default-font">
                   ALGO & USDC payments
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-default-font">
                   Email support
                 </span>
               </div>
             </div>
-            <Button
-              size="large"
-              onClick={onConnectWallet}
-              className="w-full mt-auto"
-              icon={<Wallet size={20} />}
-            >
-              Connect Wallet
-            </Button>
+            <ConnectButton />
           </div>
 
           {/* Professional Plan */}
@@ -1154,65 +1124,57 @@ function AlgopayLandingPage() {
             </div>
             <div className="flex w-full flex-col items-start gap-4">
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-white">
                   Up to 50 employees
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-white">
                   Advanced analytics & reporting
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-white">
                   Multi-currency support
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-white">
                   AI-powered insights
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-white">
                   Priority support
                 </span>
               </div>
             </div>
-            <Button
-              size="large"
-              variant="neutral-secondary"
-              onClick={onConnectWallet}
-              className="w-full mt-auto bg-white !text-black hover:bg-neutral-100"
-              icon={<Wallet size={20} />}
-            >
-              Connect Wallet
-            </Button>
+            <ConnectButton />
           </div>
 
           {/* Enterprise Plan */}
@@ -1237,64 +1199,57 @@ function AlgopayLandingPage() {
             </div>
             <div className="flex w-full flex-col items-start gap-4">
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-default-font">
                   Unlimited employees
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-default-font">
                   Custom integrations
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-default-font">
                   Dedicated account manager
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-default-font">
                   White-label options
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <IconWithBackground 
-                  variant="success" 
-                  size="small" 
-                  icon={<Shield />} 
+                <IconWithBackground
+                  variant="success"
+                  size="small"
+                  icon={<Shield />}
                 />
                 <span className="font-['Montserrat'] text-[16px] font-[500] leading-[22px] text-default-font">
                   24/7 phone support
                 </span>
               </div>
             </div>
-            <Button
-              size="large"
-              onClick={onConnectWallet}
-              className="w-full mt-auto"
-              icon={<Wallet size={20} />}
-            >
-              Connect Wallet
-            </Button>
+            <ConnectButton />
           </div>
         </div>
       </div>
@@ -1362,12 +1317,12 @@ function AlgopayLandingPage() {
         {/* Background Elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-700 rounded-full opacity-20 blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-800 rounded-full opacity-20 blur-3xl"></div>
-        
+
         <div className="flex w-full max-w-[1280px] flex-col items-center justify-center gap-8 rounded-[32px] bg-default-background px-6 pt-24 pb-16 shadow-2xl relative z-10">
           <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-brand-900 text-white px-8 py-4 rounded-full shadow-lg">
             <span className="font-['Montserrat'] text-[18px] font-[700]">Ready to Transform Your Financial Operations?</span>
           </div>
-          
+
           <div className="flex w-full flex-col items-center justify-center gap-6">
             <span className="w-full max-w-[768px] whitespace-pre-wrap font-['Montserrat'] text-[72px] font-[900] leading-[68px] text-brand-900 text-center -tracking-[0.04em] mobile:font-['Montserrat'] mobile:text-[48px] mobile:font-[900] mobile:leading-[44px] mobile:tracking-normal">
               {"START TODAY"}
@@ -1377,7 +1332,7 @@ function AlgopayLandingPage() {
                 "Join the next-generation remittance infrastructure — fast, borderless, compliant, and scalable for both VAT refunds and global payroll."
               }
             </span>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-8 mb-12">
               <div className="bg-neutral-50 rounded-xl p-6 flex flex-col items-center text-center">
                 <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mb-3">
@@ -1386,7 +1341,7 @@ function AlgopayLandingPage() {
                 <h3 className="font-['Montserrat'] text-[18px] font-[700] text-brand-900 mb-2">Save Time</h3>
                 <p className="text-subtext-color text-sm">Near-instant transactions with 4-second finality</p>
               </div>
-              
+
               <div className="bg-neutral-50 rounded-xl p-6 flex flex-col items-center text-center">
                 <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mb-3">
                   <DollarSign size={24} className="text-green-700" />
@@ -1394,7 +1349,7 @@ function AlgopayLandingPage() {
                 <h3 className="font-['Montserrat'] text-[18px] font-[700] text-brand-900 mb-2">Save Money</h3>
                 <p className="text-subtext-color text-sm">Up to 95% lower fees than traditional banking</p>
               </div>
-              
+
               <div className="bg-neutral-50 rounded-xl p-6 flex flex-col items-center text-center">
                 <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mb-3">
                   <Shield size={24} className="text-green-700" />
@@ -1404,19 +1359,12 @@ function AlgopayLandingPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="flex flex-col md:flex-row gap-6 items-center">
-            <Button
-              size="large"
-              onClick={onConnectWallet}
-              icon={<Wallet size={20} />}
-              className="px-10 py-6 shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
-            >
-              Connect Wallet
-            </Button>
-            
+            <ConnectButton />
+
             <span className="text-subtext-color">or</span>
-            
+
             <Button
               size="large"
               variant="neutral-secondary"
@@ -1427,7 +1375,7 @@ function AlgopayLandingPage() {
               Read Documentation
             </Button>
           </div>
-          
+
           <div className="mt-12 flex items-center gap-2 text-subtext-color">
             <Shield size={16} />
             <span className="text-sm">Enterprise-grade security with multi-sig treasury and oracle verification</span>

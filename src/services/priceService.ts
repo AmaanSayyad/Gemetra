@@ -321,7 +321,7 @@ export const getMarketSummary = async (): Promise<string> => {
     const cryptoNames: { [key: string]: string } = {
       'bitcoin': 'Bitcoin (BTC)',
       'ethereum': 'Ethereum (ETH)', 
-      'algorand': 'Algorand (ALGO)',
+      'algorand': 'Somnia (SOMI)',
       'cardano': 'Cardano (ADA)',
       'solana': 'Solana (SOL)'
     };

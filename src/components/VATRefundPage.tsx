@@ -17,7 +17,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
   const [qrValue, setQrValue] = useState<string>('');
   const [refundAmount, setRefundAmount] = useState<number>(0);
   const [entryMode, setEntryMode] = useState<'upload' | 'manual'>('upload');
-  const [selectedToken, setSelectedToken] = useState<'ALGO' | 'USDC'>('ALGO');
+  const [selectedToken, setSelectedToken] = useState<'SOMI' | 'USDC'>('SOMI');
   const [transactionStatus, setTransactionStatus] = useState<'waiting' | 'confirmed' | 'rejected'>('waiting');
   const [transactionHash, setTransactionHash] = useState<string>('');
   const [refundHistory, setRefundHistory] = useState<any[]>([]);
@@ -429,7 +429,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                     value={formData.receiverWalletAddress}
                     onChange={handleInputChange}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g. XBYLS2E6YI6XXL5BWCAMOA4GTWHXWXWUB3OCJP72CH3V2VJRQBQ7K5REV4"
+                    placeholder="e.g. 0xdAF0182De86F904918Db8d07c7340A1EfcDF8244"
                     required
                   />
                 </div>
@@ -442,11 +442,11 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                         type="radio"
                         name="token"
                         value="ALGO"
-                        checked={selectedToken === 'ALGO'}
-                        onChange={() => setSelectedToken('ALGO')}
+                        checked={selectedToken === 'SOMI'}
+                        onChange={() => setSelectedToken('SOMI')}
                         className="mr-2"
                       />
-                      <span className="text-sm">Algorand (ALGO)</span>
+                      <span className="text-sm">Somnia (SOMI)</span>
                     </label>
                     <label className="flex items-center">
                       <input
@@ -570,11 +570,11 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                           type="radio"
                           name="token"
                           value="ALGO"
-                          checked={selectedToken === 'ALGO'}
-                          onChange={() => setSelectedToken('ALGO')}
+                          checked={selectedToken === 'SOMI'}
+                          onChange={() => setSelectedToken('SOMI')}
                           className="mr-2"
                         />
-                        <span className="text-sm">Algorand (ALGO)</span>
+                        <span className="text-sm">Somnia (SOMI)</span>
                       </label>
                       <label className="flex items-center">
                         <input
@@ -595,7 +595,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium text-gray-700">Calculated Refund Amount:</span>
                         <span className="text-lg font-bold text-green-600">
-                          {selectedToken === 'ALGO' ? 'ALGO ' : 'USDC '}
+                          {selectedToken === 'SOMI' ? 'SOMI ' : 'USDC '}
                           {parseFloat(formData.vatAmount) > 0 ? parseFloat(formData.vatAmount).toFixed(2) : '0.00'}
                         </span>
                       </div>
@@ -757,7 +757,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Token</p>
-                          <p className="text-sm font-medium text-gray-900">{selectedToken === 'ALGO' ? 'Algorand (ALGO)' : 'USD Coin (USDC)'}</p>
+                          <p className="text-sm font-medium text-gray-900">{selectedToken === 'SOMI' ? 'Somnia (SOMI)' : 'USD Coin (USDC)'}</p>
                         </div>
                       </div>
                     </div>

@@ -3,8 +3,7 @@ import {
   LayoutDashboard, 
   Users, 
   Send, 
-  Settings, 
-  Wallet, 
+  Settings,  
   LogOut, 
   Menu, 
   X,
@@ -19,14 +18,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import { formatAddress } from '../utils/algorand';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import ConnectButton from '../utils/connect-wallet';
 
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   isWalletConnected: boolean;
   walletAddress: string;
-  onConnectWallet: () => void;
-  onDisconnectWallet: () => void;
   user?: SupabaseUser | null;
   companyName?: string;
   onToggleCollapse?: (collapsed: boolean) => void;
@@ -37,8 +35,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab,
   isWalletConnected,
   walletAddress,
-  onConnectWallet,
-  onDisconnectWallet,
   user,
   companyName,
   onToggleCollapse
@@ -428,7 +424,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         <div className="text-xs text-gray-600 mb-1">Wallet Address</div>
                         <div className="text-sm text-gray-900 font-mono break-all">{walletAddress}</div>
                       </div>
-                      <div className="p-2">
+                      {/* <div className="p-2">
                         <button
                           onClick={() => {
                             onDisconnectWallet();
@@ -439,25 +435,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           <LogOut className="w-4 h-4 text-red-400" />
                           <span className="text-red-400">Disconnect</span>
                         </button>
-                      </div>
+                      </div> */}
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             ) : (
-              <button
-                onClick={onConnectWallet}
-                className={`w-full flex items-center bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors ${
-                  shouldShowExpanded 
-                    ? 'space-x-3 px-3 py-3' 
-                    : 'justify-center px-2 py-4'
-                }`}
-              >
-                <Wallet className={`${
-                  shouldShowExpanded ? 'w-5 h-5' : 'w-6 h-6'
-                } text-white`} />
-                {shouldShowExpanded && <span className="text-white font-medium">Connect Wallet</span>}
-              </button>
+              <ConnectButton/>
             )}
           </div>
 

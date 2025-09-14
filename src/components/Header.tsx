@@ -5,7 +5,7 @@ import { formatAddress } from '../utils/algorand';
 import { useAuth } from '../hooks/useAuth';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { Button } from "@/ui/components/Button";
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import ConnectButton from '../utils/connect-wallet';
 
 interface HeaderProps {
   activeTab: string;
@@ -67,13 +67,6 @@ export const Header: React.FC<HeaderProps> = ({
     setIsMobileMenuOpen(false);
   };
 
-  const handleWalletAction = () => {
-    if (isWalletConnected) {
-      setShowWalletMenu(!showWalletMenu);
-    } else {
-      onConnectWallet();
-    }
-  };
 
   const handleSignOut = async () => {
     try {
