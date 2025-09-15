@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Employee, EmployeeWithPayments } from '../lib/supabase';
-import { getConnectedAccount, isWalletConnected } from '../utils/algorand';
-
+import { useAccount } from 'wagmi';
 // Helper function to generate a UUID
 function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     const r = Math.random() * 16 | 0;
     const v = c === 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
@@ -17,18 +16,18 @@ export const useEmployees = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+  const { address, isConnected } = useAccount();
   // Check wallet connection on hook initialization
   useEffect(() => {
     const checkWalletConnection = () => {
-      if (isWalletConnected()) {
-        const account = getConnectedAccount();
-        setWalletAddress(account);
+      if (isConnected && address) {
+
+        setWalletAddress(address);
       } else {
         setWalletAddress(null);
       }
     };
-    
+
     checkWalletConnection();
   }, []);
 
@@ -41,11 +40,11 @@ export const useEmployees = () => {
 
     try {
       setLoading(true);
-      
+
       // Get employees from localStorage
       const localStorageKey = `gemetra_employees_${walletAddress}`;
       const storedEmployees = localStorage.getItem(localStorageKey);
-      
+
       if (storedEmployees) {
         try {
           const parsedEmployees = JSON.parse(storedEmployees);
@@ -74,7 +73,7 @@ export const useEmployees = () => {
               .select('*')
               .eq('user_id', walletAddress)
               .order('created_at', { ascending: false });
-              
+
             if (!legacyError && legacyData && legacyData.length > 0) {
               setEmployees(legacyData);
               // Save to localStorage for future use
@@ -109,17 +108,17 @@ export const useEmployees = () => {
         created_at: now,
         updated_at: now
       };
-      
+
       // Add to state
       const updatedEmployees = [newEmployee, ...employees];
       setEmployees(updatedEmployees);
-      
+
       // Save to localStorage
       const localStorageKey = `gemetra_employees_${walletAddress}`;
       localStorage.setItem(localStorageKey, JSON.stringify(updatedEmployees));
-      
+
       console.log('Added employee to localStorage:', newEmployee);
-      
+
       // Try to also save to Supabase for backward compatibility
       try {
         await supabase
@@ -134,7 +133,7 @@ export const useEmployees = () => {
       } catch (supabaseError) {
         console.error('Failed to save employee to Supabase (continuing anyway):', supabaseError);
       }
-      
+
       return newEmployee;
     } catch (error) {
       console.error('Error adding employee:', error);
@@ -151,24 +150,24 @@ export const useEmployees = () => {
       if (!employeeToUpdate) {
         throw new Error(`Employee with ID ${id} not found`);
       }
-      
+
       // Create updated employee
       const updatedEmployee = {
         ...employeeToUpdate,
         ...updates,
         updated_at: new Date().toISOString()
       };
-      
+
       // Update in state
       const updatedEmployees = employees.map(emp => emp.id === id ? updatedEmployee : emp);
       setEmployees(updatedEmployees);
-      
+
       // Save to localStorage
       const localStorageKey = `gemetra_employees_${walletAddress}`;
       localStorage.setItem(localStorageKey, JSON.stringify(updatedEmployees));
-      
+
       console.log('Updated employee in localStorage:', updatedEmployee);
-      
+
       // Try to also update in Supabase for backward compatibility
       try {
         await supabase
@@ -181,7 +180,7 @@ export const useEmployees = () => {
       } catch (supabaseError) {
         console.error('Failed to update employee in Supabase (continuing anyway):', supabaseError);
       }
-      
+
       return updatedEmployee;
     } catch (error) {
       console.error('Error updating employee:', error);
@@ -196,13 +195,13 @@ export const useEmployees = () => {
       // Update state by filtering out the employee
       const updatedEmployees = employees.filter(emp => emp.id !== id);
       setEmployees(updatedEmployees);
-      
+
       // Save to localStorage
       const localStorageKey = `gemetra_employees_${walletAddress}`;
       localStorage.setItem(localStorageKey, JSON.stringify(updatedEmployees));
-      
+
       console.log('Deleted employee from localStorage, ID:', id);
-      
+
       // Try to also delete from Supabase for backward compatibility
       try {
         await supabase
@@ -227,10 +226,10 @@ export const useEmployees = () => {
       if (!employee) {
         throw new Error(`Employee with ID ${id} not found`);
       }
-      
+
       // For payments, we'll still try to get from Supabase if possible
       let payments: any[] = [];
-      
+
       try {
         const { data: paymentsData, error: payError } = await supabase
           .from('payments')
@@ -244,7 +243,7 @@ export const useEmployees = () => {
       } catch (error) {
         console.error('Error fetching payments (continuing with empty payments):', error);
       }
-      
+
       return {
         ...employee,
         payments: payments || [],

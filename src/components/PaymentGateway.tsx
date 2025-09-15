@@ -1,34 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Send, Wallet, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { sendPayment, isValidAlgorandAddress, isWalletConnected, getConnectedAccount, optInToAsset, getAccountBalance } from '../utils/algorand';
-
+import { sendPayment, getConnectedAccount, optInToAsset } from '../utils/algorand';
+import { useAccount } from 'wagmi';
+import { useBalance } from 'wagmi'
 export const PaymentGateway: React.FC = () => {
   const [recipientAddress, setRecipientAddress] = useState('');
   const [amount, setAmount] = useState('');
-  const [selectedToken, setSelectedToken] = useState('ALGO');
+  const [selectedToken, setSelectedToken] = useState('SOMI');
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentResult, setPaymentResult] = useState<{
     success: boolean;
     txHash?: string;
     error?: string;
   } | null>(null);
-
+  const {address, isConnected } = useAccount();
+    const result = useBalance({
+    address: address,
+    token: '0xDa4FDE38bE7a2b959BF46E032ECfA21e64019b76', 
+  })
   const [addressError, setAddressError] = useState('');
   const [amountError, setAmountError] = useState('');
   const [isOptingIn, setIsOptingIn] = useState(false);
   const [isOptedIntoUSDC, setIsOptedIntoUSDC] = useState(false);
 
   // Check wallet connection
-  const walletConnected = isWalletConnected();
+  const walletConnected = isConnected;
 
   // Check if user is opted-in to USDC
   useEffect(() => {
     const checkUSDCOptIn = async () => {
       if (walletConnected) {
         try {
-          const balance = await getAccountBalance();
-          const hasUSDC = balance.assets.some(asset => asset.assetId === 10458941);
+          const balance = result.data?.formatted
+          const hasUSDC = balance !== undefined && parseFloat(balance) > 0;
           setIsOptedIntoUSDC(hasUSDC);
         } catch (error) {
           console.error('Failed to check USDC opt-in status:', error);
@@ -45,10 +50,7 @@ export const PaymentGateway: React.FC = () => {
       return false;
     }
     
-    if (!isValidAlgorandAddress(address)) {
-      setAddressError('Invalid Algorand address format');
-      return false;
-    }
+   
     
     setAddressError('');
     return true;
@@ -67,8 +69,8 @@ export const PaymentGateway: React.FC = () => {
       return false;
     }
     
-    if (selectedToken === 'ALGO' && numAmount < 0.001) {
-      setAmountError('Minimum amount is 0.001 ALGO');
+    if (selectedToken === 'SOMI' && numAmount < 0.001) {
+      setAmountError('Minimum amount is 0.001 SOMI');
       return false;
     }
     
@@ -111,16 +113,7 @@ export const PaymentGateway: React.FC = () => {
       return;
     }
 
-    // Check wallet connection before proceeding
-    const currentAccount = getConnectedAccount();
-    if (!currentAccount) {
-      setPaymentResult({
-        success: false,
-        error: 'Wallet connection lost. Please reconnect your wallet and try again.'
-      });
-      return;
-    }
-
+ 
     setIsProcessing(true);
 
     try {
@@ -237,7 +230,7 @@ export const PaymentGateway: React.FC = () => {
               Select Token
             </label>
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              {['ALGO', 'USDC'].map((token) => (
+              {['SOMI', 'USDC'].map((token) => (
                 <button
                   key={token}
                   onClick={() => setSelectedToken(token)}
@@ -291,7 +284,7 @@ export const PaymentGateway: React.FC = () => {
                 type="text"
                 value={recipientAddress}
                 onChange={handleAddressChange}
-                placeholder="Enter Algorand address"
+                placeholder="Enter SOMNIA address"
                 className={`bg-gray-100 border border-gray-300 text-gray-900 rounded-lg pl-8 sm:pl-10 pr-4 py-2 sm:py-3 w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base ${
                   addressError ? 'border-red-500 focus:border-red-500' : ''
                 }`}
@@ -349,7 +342,7 @@ export const PaymentGateway: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Network Fee:</span>
-                  <span className="text-gray-900">~0.001 ALGO</span>
+                  <span className="text-gray-900">~0.001 SOMI</span>
                 </div>
               </div>
             </motion.div>
@@ -389,7 +382,7 @@ export const PaymentGateway: React.FC = () => {
                         </div>
                       )}
                       <button
-                        onClick={() => window.open(`https://testnet.algoexplorer.io/tx/${paymentResult.txHash}`, '_blank')}
+                        onClick={() => window.open(`https://shannon-explorer.somnia.network/tx/${paymentResult.txHash}`, '_blank')}
                         className="text-xs text-purple-600 hover:text-purple-700 inline-flex items-center space-x-1 mt-1"
                       >
                         <span>View on Explorer</span>

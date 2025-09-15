@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Payment } from '../lib/supabase';
-import { getConnectedAccount, isWalletConnected } from '../utils/algorand';
+import { useAccount } from 'wagmi';
 
 // Helper function to generate a UUID
 function generateUUID() {
@@ -17,18 +17,17 @@ export const usePayments = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { address,isConnected } = useAccount();
   
   // Check wallet connection on hook initialization
   useEffect(() => {
     const checkWalletConnection = () => {
-      if (isWalletConnected()) {
-        const account = getConnectedAccount();
-        setWalletAddress(account);
+      if (isConnected && address) {
+        setWalletAddress(address);
       } else {
         setWalletAddress(null);
       }
     };
-    
     checkWalletConnection();
   }, []);
   

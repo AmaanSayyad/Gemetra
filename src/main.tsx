@@ -33,6 +33,11 @@ createAppKit({
   metadata,
   features: {
     analytics: true // Optional - defaults to your Cloud configuration
+  },
+  themeVariables: {
+    "--w3m-accent": "#4F46E5",     // Accent color
+    "--w3m-background": "#262626",  // Background color
+    "--w3m-font-size-master": "12px", // Base font size
   }
 })
 

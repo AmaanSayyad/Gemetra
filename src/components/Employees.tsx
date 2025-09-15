@@ -53,6 +53,7 @@ export const Employees: React.FC<EmployeesProps> = ({
 
   const handleAddEmployee = async (newEmployeeData: Omit<Employee, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     try {
+      console.log('Adding employee:', newEmployeeData);
       await addEmployee(newEmployeeData);
     } catch (error) {
       console.error('Failed to add employee:', error);

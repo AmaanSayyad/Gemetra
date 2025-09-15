@@ -1,6 +1,6 @@
 # 🌍 Gemetra  
 **Global Remittance Infrastructure for VAT Refunds & Payroll**  
-Wallet-native. AI-powered. Borderless. Built on Mezo.  
+Wallet-native. AI-powered. Borderless. Built on SOMNIA.  
 
 ---
 

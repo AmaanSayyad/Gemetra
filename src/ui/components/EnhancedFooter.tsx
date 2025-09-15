@@ -40,7 +40,7 @@ const EnhancedFooter = React.forwardRef<HTMLElement, EnhancedFooterProps>(
               </div>
               
               <p className="text-white/70 mb-6 text-sm">
-                Borderless payments infrastructure built on Mezo blockchain unifying VAT refunds and global payroll automation with AI-driven financial intelligence.
+                Borderless payments infrastructure built on SOMNIA blockchain unifying VAT refunds and global payroll automation with AI-driven financial intelligence.
               </p>
               
               <div className="flex items-center gap-4 mb-8">

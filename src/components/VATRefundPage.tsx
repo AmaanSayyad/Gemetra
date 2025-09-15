@@ -853,12 +853,12 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
               {transactionStatus === 'waiting' ? (
                 <>
                   <QrCode className="w-16 h-16 text-blue-500 mb-4" />
-                  <h3 className="font-semibold text-gray-900 mb-2">Check Your Pera Mobile Wallet</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">Check Your EVM Mobile Wallet</h3>
                   <p className="text-gray-600 text-center mb-2">
-                    A transaction popup should appear in your Pera mobile wallet app
+                    A transaction popup should appear in your EVM mobile wallet app
                   </p>
                   <p className="text-gray-500 text-center text-sm mb-6">
-                    If you don't see it, scan this QR code with your Pera Wallet app
+                    If you don't see it, scan this QR code with your EVM Wallet app
                   </p>
 
                   <div className="bg-white border-2 border-gray-300 rounded-lg p-6 w-[200px] h-[200px] flex items-center justify-center mb-4">
@@ -882,7 +882,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-blue-700">Network Fee:</span>
-                        <span className="text-sm font-medium text-blue-900">0.001 ALGO</span>
+                        <span className="text-sm font-medium text-blue-900">0.001 SOMI</span>
                       </div>
                     </div>
                   </div>
@@ -896,13 +896,13 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                       </div>
                       <h3 className="font-semibold text-gray-900 mb-2">Transaction Confirmed!</h3>
                       <p className="text-gray-600 mb-4">
-                        Your transaction has been confirmed on the Algorand blockchain
+                        Your transaction has been confirmed on the Somnia blockchain
                       </p>
                       <div className="bg-green-50 border border-green-100 rounded-lg p-3 mb-4">
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-green-700">Transaction Hash:</span>
                           <a
-                            href={`https://testnet.explorer.perawallet.app/tx/${transactionHash || qrValue.slice(-16)}`}
+                            href={`https://shannon-explorer.somnia.network/tx/${transactionHash || qrValue.slice(-16)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-green-900 font-mono flex items-center hover:text-blue-600 hover:underline"
