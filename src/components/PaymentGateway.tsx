@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Send, Wallet, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { sendPayment, getConnectedAccount, optInToAsset } from '../utils/algorand';
+import { sendPayment, optInToAsset } from '../utils/algorand';
 import { useAccount } from 'wagmi';
 import { useBalance } from 'wagmi'
 export const PaymentGateway: React.FC = () => {
@@ -18,7 +18,8 @@ export const PaymentGateway: React.FC = () => {
     const result = useBalance({
     address: address,
     token: '0xDa4FDE38bE7a2b959BF46E032ECfA21e64019b76', 
-  })
+  });
+  console.log({result})
   const [addressError, setAddressError] = useState('');
   const [amountError, setAmountError] = useState('');
   const [isOptingIn, setIsOptingIn] = useState(false);
@@ -118,7 +119,7 @@ export const PaymentGateway: React.FC = () => {
 
     try {
       console.log('Sending payment:', {
-        from: currentAccount,
+        from: address,
         recipient: recipientAddress,
         amount: parseFloat(amount),
         token: selectedToken
