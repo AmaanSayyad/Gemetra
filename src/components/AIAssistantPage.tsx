@@ -6,6 +6,8 @@ import { usePayments } from '../hooks/usePayments';
 import { generateAIResponse, type AIContext } from '../services/aiService';
 import { useChat } from '../hooks/useChat'; // Import useChat hook
 import type { ChatMessage as DBChatMessage } from '../lib/supabase'; // Import DB ChatMessage type
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   id: string;
@@ -258,7 +260,13 @@ export const AIAssistantPage: React.FC<AIAssistantPageProps> = ({
                     ? 'bg-gray-900 text-white'
                     : 'bg-gray-100 text-gray-900'
                 }`}>
-                  <div className="whitespace-pre-wrap text-sm sm:text-base leading-relaxed">{message.content}</div>
+                  {message.type === 'user' ? (
+                    <div className="whitespace-pre-wrap text-sm sm:text-base leading-relaxed">{message.content}</div>
+                  ) : (
+                    <div className="markdown-content text-sm sm:text-base leading-relaxed">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
+                    </div>
+                  )}
                   <div className={`text-xs mt-1 sm:mt-2 ${
                     message.type === 'user' ? 'text-gray-300' : 'text-gray-500'
                   }`}>
